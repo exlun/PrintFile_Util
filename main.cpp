@@ -125,14 +125,17 @@ int FileReadInverted(const char* file_name, long long lines_count, char delimite
     std::ifstream file;
     file.open(file_name, std::ios::ate);
     if (file.is_open()) {
-            while (count < lines_count) { // Установка указателя на lines_count разделителей назад от конца файла
-                file.seekg(-1, std::ios::cur);
-                char word = (char) file.get();
-                if (word == delimiter) {
-                    count++;
+        long long file_size = file.tellg();
+        for (long long i = file_size-1; i > 0; i--) {
+            file.seekg(i);
+            file.get(symbol);
+            if (symbol == delimiter) {
+                count++;
+                if (count == lines_count) {
+                    break;
                 }
-                file.seekg(-1, std::ios::cur);
             }
+        }
             count = 0;
             while (file.get(symbol) && count <= lines_count) {
                 std::cout << symbol;
